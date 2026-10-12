@@ -1,0 +1,9 @@
+node_modules/
+.npm-cache/
+.env
+data/
+*.log
+npm-debug.log*
+frontend/dist/
+frontend/.vite/
+.sites-runtime/

@@ -1,0 +1,9 @@
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../app/providers/AuthProvider';
+import { useNotify } from '../../app/providers/ToastProvider';
+const navItems = [{ to: '/', label: 'Home', icon: '⌂' }, { to: '/live', label: 'Live', icon: '▣' }, { to: '/devices', label: 'Devices', icon: '◉' }, { to: '/events', label: 'Events', icon: '◷' }, { to: '/settings', label: 'Settings', icon: '⚙' }];
+export function AppShell() {
+ const { logout, session } = useAuth(); const navigate = useNavigate(); const notify=useNotify();
+ async function signOut() { try { await logout(); navigate('/login', { replace: true }); } catch(e) { notify(e instanceof Error?e.message:'Sign out failed'); } }
+ return <div className="app-shell"><header className="topbar"><Link className="brand" to="/"><span className="brand-mark">S</span><span><strong>Sentinel</strong><small>LIVE MONITORING</small></span></Link><nav className="desktop-nav" aria-label="Primary navigation">{navItems.map((item) => <NavLink key={item.to} to={item.to} end={item.to === '/'}><span aria-hidden="true">{item.icon}</span>{item.label}</NavLink>)}</nav><div className="topbar-actions"><span className="user-label">{session?.username}</span><button className="icon-button" aria-label="Notifications unavailable" title="Notifications are not available" disabled>♢</button><button className="logout-button" onClick={() => void signOut()}>Sign out</button></div></header><main className="page-content"><Outlet /></main><nav className="mobile-nav" aria-label="Mobile navigation">{navItems.slice(0, 4).map((item) => <NavLink key={item.to} to={item.to} end={item.to === '/'}><span aria-hidden="true">{item.icon}</span><small>{item.label}</small></NavLink>)}<button onClick={() => navigate('/settings')}><span aria-hidden="true">···</span><small>More</small></button></nav></div>;
+}

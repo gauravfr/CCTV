@@ -1,0 +1,3 @@
+.app-shell{isolation:isolate}.topbar{width:100%;min-width:0}.desktop-nav{min-width:0}.mobile-nav{padding-bottom:calc(6px + env(safe-area-inset-bottom))}.device-tabs{overscroll-behavior-inline:contain}.device-hero,.page-heading,.section-heading{min-width:0}.page-heading>*,.device-hero>*{min-width:0}
+@media(max-width:640px){.topbar{gap:8px}.device-hero{align-items:stretch}.hero-actions{width:100%}.device-tabs{margin-inline:0}.camera-dialog{overscroll-behavior:contain}}
+@media(max-width:375px){.page-content{padding-inline:13px}.hero-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}

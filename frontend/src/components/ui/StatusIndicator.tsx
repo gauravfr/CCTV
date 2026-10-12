@@ -1,0 +1,1 @@
+export function StatusIndicator({ online, label }: { online: boolean; label: string }) { return <span className={`status-indicator ${online ? 'is-online' : 'is-offline'}`}><i aria-hidden="true" />{label}</span>; }

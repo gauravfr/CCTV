@@ -1,0 +1,50 @@
+{
+  "name": "cctv-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "concurrently -k -n backend,frontend \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "check": "node --check src/server.js && node --check src/routes/devices.js && node --check src/services/providers/demoProvider.js && node --check src/routes/cameras.js && node --check src/routes/streams.js && node --check src/services/cameraService.js && node --check src/services/rtspService.js && node --check src/services/onvifService.js && node --check src/services/dahuaService.js && node --check src/services/cpplusService.js && node --check src/services/capabilityService.js && node --check src/services/streamService.js && node --check src/services/executableService.js && node --check src/db/database.js && tsc --noEmit -p tsconfig.json",
+    "backend:dev": "node --watch src/server.js",
+    "frontend:dev": "vite --config vite.config.mts",
+    "frontend:build": "vite build --config vite.config.mts",
+    "build": "npm run frontend:build",
+    "start:app": "npm run frontend:build && node src/server.js",
+    "test": "vitest run --config vite.config.mts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "express-session": "^1.18.2",
+    "helmet": "^8.1.0",
+    "hls.js": "^1.7.3",
+    "onvif": "^0.8.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "concurrently": "^10.0.5",
+    "jsdom": "^30.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
+  }
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080b0e">
+  <meta name="description" content="Secure multi-camera monitoring for Dahua and CP Plus devices.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0e11'/%3E%3Cpath d='M7 11h12a3 3 0 0 1 3 3v1l5-3v9l-5-3v1a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-5a3 3 0 0 1 3-3Z' fill='none' stroke='%2328e092' stroke-width='2'/%3E%3C/svg%3E">
+  <title>Sentinel CCTV Dashboard</title>
+  <link rel="stylesheet" href="/styles.css?v=5">
+  <script defer src="/vendor/hls.min.js"></script>
+  <script defer src="/app.js?v=5"></script>
+</head>
+<body>
+  <section class="login-screen" id="loginScreen">
+    <form class="login-card" id="loginForm">
+      <div class="logo large"><span class="logo-mark">S</span><span><strong>Sentinel</strong><small>CCTV Dashboard</small></span></div>
+      <div><p class="kicker">SECURE ACCESS</p><h1>Welcome back</h1><p class="muted">Sign in to view and manage connected cameras.</p></div>
+      <label>Username or email<input name="username" autocomplete="username" required></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="form-error" id="loginError" role="alert"></p>
+      <button class="primary wide" type="submit">Sign in</button>
+      <p class="secure-copy">Your session is protected with an HTTP-only cookie.</p>
+    </form>
+  </section>
+
+  <div class="app" id="app" hidden>
+    <header class="topbar">
+      <div class="logo"><span class="logo-mark">S</span><span><strong>Sentinel</strong><small>CCTV Dashboard</small></span></div>
+      <nav class="desktop-nav" aria-label="Main navigation"><button class="main-nav active" data-home>Overview</button><button class="main-nav" data-home>Devices</button><button class="main-nav" data-home>Live View</button><button class="main-nav" data-home>Events</button></nav>
+      <div class="top-actions">
+        <button class="ghost-button icon-button" type="button" title="Notifications" aria-label="Notifications">♢</button>
+        <button class="ghost-button icon-button mobile-menu" type="button" title="Open menu" aria-label="Open menu" data-menu>☰</button>
+        <div class="clock"><span id="dateText">—</span><strong id="timeText">—</strong></div>
+        <button class="ghost-button" id="fullscreenDashboard" type="button" title="Fullscreen dashboard" aria-label="Fullscreen dashboard"><span class="icon">⛶</span></button>
+        <button class="ghost-button text-button" id="logout" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="dashboard-heading">
+        <div><p class="kicker">SECURITY OVERVIEW</p><h1>Good evening</h1><p class="muted" id="summary">Your security devices at a glance</p></div>
+        <button class="primary add-button" id="addCamera" type="button"><span>＋</span> Add Device</button>
+      </section>
+
+      <section class="security-overview" aria-label="Security overview"><article class="overview-stat"><span>Online devices</span><strong id="statDevices">—</strong><small>Connected</small></article><article class="overview-stat"><span>Channels</span><strong id="statChannels">—</strong><small>Across all devices</small></article><article class="overview-stat"><span>Recording</span><strong id="statRecording">—</strong><small>Continuous</small></article><article class="overview-stat"><span>Alerts</span><strong id="statAlerts">—</strong><small>Needs attention</small></article></section>
+      <section class="home-section-heading"><div><p class="kicker">MONITORING</p><h2>Devices</h2></div><span class="device-count" id="deviceCount">Loading devices</span></section>
+      <section class="empty-state" id="emptyState">
+        <div class="empty-icon" aria-hidden="true">◉</div>
+        <h2>No cameras added yet</h2>
+        <p>Add a Dahua, CP Plus, or custom RTSP camera. The connection will be tested before it appears here.</p>
+        <button class="secondary" id="emptyAddCamera" type="button">＋ Add Camera</button>
+      </section>
+      <section class="camera-grid" id="cameraGrid" aria-live="polite"></section>
+      <button class="demo-device-card" id="demoDeviceCard" type="button" hidden>
+        <div class="demo-device-visual" aria-hidden="true"><span class="demo-camera-icon">▣</span><span class="demo-channel-count">4 CH</span></div>
+        <div class="demo-device-copy"><div class="badge-row"><span class="demo-badge">DEMO DEVICE</span><span class="online-pill">● ONLINE</span></div><h2>CP Plus Demo XVR</h2><p>CP-XVR-4CH-DEMO</p><div class="demo-card-type">4 channel recorder</div><div class="demo-card-metrics"><span><b>42°C</b>Temperature</span><span><b>68%</b>Storage</span><span><b>4</b>Channels</span></div><div class="demo-recording"><span class="recording-dot"></span>Recording <strong>Active</strong></div></div>
+        <span class="open-demo" aria-hidden="true">Open device <b>→</b></span>
+      </button>
+      <section class="device-page" id="devicePage" hidden></section>
+    </main>
+    <footer><span>Secure local monitoring gateway</span><span>RTSP credentials remain server-side</span></footer>
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation"><button class="active" data-home><span>⌂</span><small>Home</small></button><button data-device-tab="Live View"><span>▣</span><small>Live</small></button><button data-home><span>◉</span><small>Devices</small></button><button data-device-tab="Events"><span>◷</span><small>Events</small></button><button data-device-tab="Settings"><span>···</span><small>More</small></button></nav>
+  </div>
+
+  <dialog class="modal" id="cameraModal">
+    <form method="dialog" class="modal-shell" id="cameraForm">
+      <header class="modal-header"><div><p class="kicker">DEVICE SETUP</p><h2>Add camera</h2></div><button class="close-button" value="cancel" aria-label="Close">×</button></header>
+      <div class="modal-body">
+        <div class="field-grid">
+          <label class="span-2">Camera name<input name="name" placeholder="Main Gate" maxlength="80" required></label>
+          <label>Brand<select name="brand"><option value="dahua">Dahua</option><option value="cpplus">CP Plus</option><option value="custom">Custom RTSP</option></select></label>
+          <label>Connection type<select name="connectionType"><option value="direct">Direct camera</option><option value="recorder">NVR / DVR / XVR</option></select></label>
+          <label class="span-2">IP / hostname<input name="host" placeholder="10.10.10.20" autocomplete="off" required></label>
+          <label>RTSP port<input name="rtspPort" type="number" value="554" min="1" max="65535" required></label>
+          <label>ONVIF port<input name="onvifPort" type="number" value="80" min="1" max="65535" required></label>
+          <label>Username<input name="username" autocomplete="off" required></label>
+          <label>Password<input name="password" type="password" autocomplete="new-password" required></label>
+          <label>Channel<input name="channel" type="number" value="1" min="1" max="1024" required></label>
+          <label>Stream<select name="stream"><option value="main">Main stream</option><option value="sub">Sub stream</option></select></label>
+          <label class="span-2">Optional custom RTSP URL<input name="customRtspUrl" placeholder="rtsp://camera-host:554/custom/path" autocomplete="off"><small>Credentials are applied securely by the server.</small></label>
+          <label class="check-row span-2"><input name="remember" type="checkbox"><span><strong>Remember this camera</strong><small>Encrypt credentials in the local SQLite database.</small></span></label>
+        </div>
+        <div class="test-panel" id="testPanel" hidden>
+          <div class="test-heading"><span class="test-spinner" id="testSpinner"></span><strong id="testTitle">Testing connection</strong></div>
+          <p id="testStep">Connecting to camera…</p>
+          <div class="test-results" id="testResults"></div>
+        </div>
+        <p class="form-error" id="cameraError" role="alert"></p>
+      </div>
+      <footer class="modal-actions"><button class="ghost-button text-button" value="cancel">Cancel</button><button class="secondary" id="testCamera" type="button">Test connection</button><button class="primary" id="connectCamera" type="button" disabled>Connect camera</button></footer>
+    </form>
+  </dialog>
+
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="details-drawer" id="detailsDrawer" aria-hidden="true">
+    <header><div><p class="kicker">CAMERA DETAILS</p><h2 id="drawerTitle">Device information</h2></div><button class="close-button" id="closeDrawer" type="button" aria-label="Close details">×</button></header>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+
+
+
+
+
