@@ -1,5 +1,5 @@
 
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 function apiProxy() {
@@ -10,7 +10,10 @@ function apiProxy() {
     configure(proxy: any) {
       proxy.on('proxyReq', (proxyReq: any, req: any) => {
         if (req.headers.origin) {
-          proxyReq.setHeader('origin', 'http://localhost:3000');
+          proxyReq.setHeader(
+            'origin',
+            'http://localhost:3000'
+          );
         }
       });
     },
@@ -36,18 +39,5 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-  },
-
-  test: {
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
-    css: true,
-    pool: 'threads',
-    isolate: false,
-    maxWorkers: 1,
-    include: [
-      'src/**/*.test.{ts,tsx}',
-      '../src/**/*.test.js',
-    ],
   },
 });
